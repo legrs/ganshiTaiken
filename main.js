@@ -30,6 +30,8 @@ console.log(center[0],center[1]);
 let canv = document.getElementById("canvas");
 let cimg = document.getElementById("cImg");
 let debug = document.getElementById("debug");
+let yuragiS = document.getElementById("yuragiS");
+let yuragiP = document.getElementById("yuragiP");
 
     // elements setup
 debug.addEventListener("click",()=>{
@@ -45,7 +47,10 @@ debug.addEventListener("click",()=>{
     console.log(center[0],center[1]);
     resizeWindow();
     isM81 = !isM81;
-})
+});
+yuragiS.addEventListener("change",()=>{
+    yuragiP.innerHTML = yuragiS.value.toString();
+});
 
     // consts
 const con = canv.getContext("2d");
@@ -72,8 +77,9 @@ function draw(){
                 Bri[j] = 0;
                 nullKazu++;
             }else{
-                Bri[j] = 15 - stars.data[i][5-j] 
-                Bri[j] += 0.1*Bri[j]*Math.random();
+                Bri[j] = 16 - stars.data[i][5-j] 
+                Bri[j] += yuragiS.value*Bri[j]*Math.random();
+                Bri[j] -= yuragiS.value*Bri[j]/2;
             }
         }
         count = Bri[0]+Bri[1]+Bri[2];
@@ -124,7 +130,7 @@ function draw(){
                 sradi = count/3;
                 con.fillStyle = "#ffffff";
                 con.arc(iti[0], iti[1] , sradi , 0 , Math.PI*2 , true);
-                //con.fill();
+                con.fill();
             }
         }else{
             sradi = 0.5;

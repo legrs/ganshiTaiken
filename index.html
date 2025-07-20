@@ -24,6 +24,12 @@
                 right: 0px;
                 z-index: 1;
             }
+            p{
+                color: #ffffffff;
+            }
+            .slider{
+                display: flex;
+            }
         </style>
     </head>
     <body>
@@ -32,6 +38,10 @@
         <canvas id="canvas" width="1px" height="1px"></canvas>
         <section id="body">
             <input type="button" id="debug" value="change" />
+            <br>
+            <div class="slider">
+            <p>ゆらぎ</p><input type="range" id="yuragiS" value="0.1" min="0" max="1" step="0.05"/><p id="yuragiP">0.1</p>
+            </div>
         </section>
         <script src="./main.js">
         </script>

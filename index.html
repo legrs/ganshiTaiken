@@ -14,13 +14,25 @@
                 left: 0px;
                 bottom: 0px;
                 right: 0px;
+                z-index: 0;
+            }
+            #body{
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                bottom: 0px;
+                right: 0px;
+                z-index: 1;
             }
         </style>
     </head>
     <body>
 
         <!-- <img src="./m81_m82_T.png" id ="cImg"/> -->
-        <canvas id="canvas" width="1px" height="1px"/>
+        <canvas id="canvas" width="1px" height="1px"></canvas>
+        <section id="body">
+            <input type="button" id="debug" value="change" />
+        </section>
         <script src="./main.js">
         </script>
 

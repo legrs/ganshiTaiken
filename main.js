@@ -13,7 +13,7 @@ let back; // 背景の明るさ mag
 let diam; // 口径 mm
 let magn; // 倍率 倍
 let vmagn = 0.1; //描画につかう倍率 px/mdeg
-let fov = ; //°
+let fov = 2.7; //°
 //let fl = 130; //現実で使用するレンズの倍率
 
 let request = new XMLHttpRequest();

@@ -5,25 +5,26 @@ let turb; // 大気ゆらぎ mdeg
 let back; // 背景の明るさ mag
 let diam; // 口径 mm
 let magn; // 倍率 倍
-let vmagn = 0.1; //描画につかう倍率 px/mdeg
-let fov = 1.5; //°
+let vmagn = 0.1; //描画につかう倍率 px/deg
+let fov = 1.4; //°
 let fl = 130; //現実で使用するレンズの倍率
-let radi,cv,count,sradi;
+let radi,count,sradi;
 let center2 = [0,0];
 let Bri = [0,0,0];
 let iti = [0,0];
 let nullKazu = 0;
 let cuv = 0.1;
 let maxBri;
-let isM81 = true;
+let mouse = [0,0];
+let cosD;
+let debugBool = false;
     // 
 let request = new XMLHttpRequest();
-request.open("GET", "./stars/m27_1.json", false);
-//request.open("GET", "./stars/m81_1.json", false);
+request.open("GET", "./stars/m81.json", false);
 request.send();
-//let center = [148.5, 69.45];
 let stars = JSON.parse(request.responseText);
 let center = [stars.data[0][1],stars.data[0][2]];
+cosD = Math.cos(center[1]*Math.PI/180);
 console.log(center[0],center[1]);
 
     // elements
@@ -32,30 +33,40 @@ let cimg = document.getElementById("cImg");
 let debug = document.getElementById("debug");
 let yuragiS = document.getElementById("yuragiS");
 let yuragiP = document.getElementById("yuragiP");
+let minRadimaxMagS = document.getElementById("minRadimaxMagS");
+let minRadimaxMagP = document.getElementById("minRadimaxMagP");
+let dl = document.getElementById("DSOlist");
 
     // elements setup
 debug.addEventListener("click",()=>{
-    request = new XMLHttpRequest();
-    if(isM81){
-        request.open("GET", "./stars/m81_1.json", false);
-    }else{
-        request.open("GET", "./stars/m27_1.json", false);
-    }
+    debugBool = !debugBool;
+});
+yuragiS.addEventListener("change",()=>{
+    yuragiP.innerHTML = yuragiS.value.toString();
+});
+minRadimaxMagS.addEventListener("change",()=>{
+    minRadimaxMagP.innerHTML = minRadimaxMagS.value.toString();
+});
+dl.addEventListener("change",()=>{
+    request.open("GET", `./stars/${dl.value}.json`, false);
     request.send();
     stars = JSON.parse(request.responseText);
     center = [stars.data[0][1],stars.data[0][2]];
     console.log(center[0],center[1]);
     resizeWindow();
-    isM81 = !isM81;
 });
-yuragiS.addEventListener("change",()=>{
-    yuragiP.innerHTML = yuragiS.value.toString();
+document.getElementById("body").addEventListener("click",(event)=>{
+    console.log(event.clientX, event.clientY);
+    mouse[0] = event.clientX;
+    mouse[1] = event.clientY;
+    console.log(" ");
+    resizeWindow();
+    console.log(" ");
 });
-
     // consts
 const con = canv.getContext("2d");
 const dimm = 100000;
-const minradiMaxcount = 8;
+const base = 16; //mag (base)mag |-> 0Bri
 
 
 function reCal(){
@@ -77,9 +88,8 @@ function draw(){
                 Bri[j] = 0;
                 nullKazu++;
             }else{
-                Bri[j] = 16 - stars.data[i][5-j] 
-                Bri[j] += yuragiS.value*Bri[j]*Math.random();
-                Bri[j] -= yuragiS.value*Bri[j]/2;
+                Bri[j] = base - stars.data[i][5-j] 
+                Bri[j] += yuragiS.value*Bri[j]*(Math.random()-0.5);
             }
         }
         count = Bri[0]+Bri[1]+Bri[2];
@@ -88,7 +98,7 @@ function draw(){
         Bri[1] = Math.floor(Bri[1]*255/maxBri);
         Bri[2] = Math.floor(Bri[2]*255/maxBri);
         count = count / (3-nullKazu);
-        count = count / minradiMaxcount;
+        count = count / (base - minRadimaxMagS.value);
         con.beginPath();
         /*
         if(stars.data[i][0] == 1070540497113726080){
@@ -116,10 +126,9 @@ function draw(){
             Bri[2] = 20;
         }
         */
-        //iti[0] = -stars.data[i][1]*cv + center2[0];
-        //iti[1] = -stars.data[i][2]*cv + center2[1];
-        iti[0] = width/2 - (stars.data[i][1] - center[0])*cv;
-        iti[1] = height/2 - (stars.data[i][2] - center[1])*cv;
+        iti[0] = -stars.data[i][1]*vmagn*cosD + center2[0];
+        iti[1] = -stars.data[i][2]*vmagn + center2[1];
+        count *= count/2;
         if(1 <= count){
             sradi = count/2;
             con.fillStyle = `#${Bri[0].toString(16).padStart(2,'0')}${Bri[1].toString(16).padStart(2,'0')}${Bri[2].toString(16).padStart(2,'0')}ff`;
@@ -139,6 +148,18 @@ function draw(){
             con.arc(iti[0], iti[1] , sradi , 0 , Math.PI*2 , true);
             con.fill();
         }
+
+
+        //debug
+        /*
+        if(stars.data[i][3] < 2){
+            console.log("vegaかな",stars.data[i][3]);
+        }
+        if(Math.abs(iti[0]-mouse[0]) < 3 && Math.abs(iti[1]-mouse[1]) < 3){
+            console.log(i,stars.data[i]);
+        }
+        */
+        ///debug
     }
 }
 function resizeWindow(){
@@ -148,8 +169,9 @@ function resizeWindow(){
     canv.height = height;
 
     radi = (Math.min(canv.width,canv.height)/2);
-    cv = radi*2/fov; //px/°
-    center2 = [width/2 + center[0]*cv, height/2 + center[1]*cv];
+    vmagn = radi*2/fov; //px/°
+    cosD = Math.cos(center[1]*Math.PI/180);
+    center2 = [width/2 + center[0]*vmagn*cosD, height/2 + center[1]*vmagn];
     draw();
     //cimg.style.width = Math.min(width,height);    
     //cimg.style.height = Math.min(width,height);    
@@ -157,9 +179,9 @@ function resizeWindow(){
 window.onresize = resizeWindow;
 
 
-//ここから，ここから
+//ここから、ここから
 
 resizeWindow();
 console.log(stars.data[0][0]);
-let yuragi = setInterval(draw, 50);
+let yuragi = setInterval(draw, 10);
 //setTimeout(()=>{clearInterval(yuragi)},10000);

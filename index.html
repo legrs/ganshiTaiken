@@ -38,9 +38,17 @@
         <canvas id="canvas" width="1px" height="1px"></canvas>
         <section id="body">
             <input type="button" id="debug" value="change" />
+            <select id="DSOlist">
+                <option value="m81">m81</option>
+                <option value="m27">m27</option>
+                <option value="m57">m57</option>
+            </select>
             <br>
             <div class="slider">
-            <p>ゆらぎ</p><input type="range" id="yuragiS" value="0.1" min="0" max="1" step="0.05"/><p id="yuragiP">0.1</p>
+                <p>ゆらぎ強さ</p><input type="range" id="yuragiS" value="0.1" min="0" max="1" step="0.05"/><p id="yuragiP">0.1</p>
+            </div>
+            <div class="slider">
+                <p>星の最小半径での最大明さ(等級)</p><input type="range" id="minRadimaxMagS" value="5" min="0" max="15" step="0.5"/><p id="minRadimaxMagP">5</p>
             </div>
         </section>
         <script src="./main.js">

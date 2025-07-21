@@ -20,7 +20,7 @@ let cosD;
 let debugBool = false;
     // 
 let request = new XMLHttpRequest();
-request.open("GET", "./stars/m81.json", false);
+request.open("GET", "./stars/m27.json", false);
 request.send();
 let stars = JSON.parse(request.responseText);
 let center = [stars.data[0][1],stars.data[0][2]];
@@ -33,9 +33,13 @@ let cimg = document.getElementById("cImg");
 let debug = document.getElementById("debug");
 let yuragiS = document.getElementById("yuragiS");
 let yuragiP = document.getElementById("yuragiP");
+let cimgBriS = document.getElementById("cimgBriS");
+let cimgBriP = document.getElementById("cimgBriP");
 let minRadimaxMagS = document.getElementById("minRadimaxMagS");
 let minRadimaxMagP = document.getElementById("minRadimaxMagP");
 let dl = document.getElementById("DSOlist");
+let infoD = document.getElementById("infoDiv");
+let infoB = document.getElementById("info");
 
     // elements setup
 debug.addEventListener("click",()=>{
@@ -43,6 +47,18 @@ debug.addEventListener("click",()=>{
 });
 yuragiS.addEventListener("change",()=>{
     yuragiP.innerHTML = yuragiS.value.toString();
+});
+infoB.addEventListener("click",()=>{
+    if(infoD.style.display == "block"){
+        infoD.style.display = "none";
+    }else{
+        infoD.style.display = "block";
+    }
+});
+cimgBriS.addEventListener("change",()=>{
+    cimgBriP.innerHTML = cimgBriS.value.toString();
+    cimg.style.opacity = cimgBriS.value/100;
+    console.log(`set opacity at ${cimgBriS.value/100}`);
 });
 minRadimaxMagS.addEventListener("change",()=>{
     minRadimaxMagP.innerHTML = minRadimaxMagS.value.toString();
@@ -60,6 +76,7 @@ document.getElementById("body").addEventListener("click",(event)=>{
     mouse[0] = event.clientX;
     mouse[1] = event.clientY;
     console.log(" ");
+    console.log(center[0] + (mouse[0] - height/2)/(vmagn*cosD) , center[1] + (mouse[1] - height/2)/(vmagn) );
     resizeWindow();
     console.log(" ");
 });
@@ -67,10 +84,14 @@ document.getElementById("body").addEventListener("click",(event)=>{
 const con = canv.getContext("2d");
 const dimm = 100000;
 const base = 16; //mag (base)mag |-> 0Bri
+const cname = ["m27","m81","m57"];
+const cimgD = [ //画像の位置を大きさを正しくするための値 画像の左上の位置(ra,dec)，画像の幅,高さ(°)
+    [300,22.8,0.2,0.15],
+    [300,22.8,0.2,0.15],
+    [300,22.8,0.2,0.15]
+    ];
 
 
-function reCal(){
-}
 function drawStar(x, y, r, b){
     let airPat = con.createRadialGradient(x*vmagn,y*vmagn,0,x*vmagn,y*vmagn,)
 }
@@ -128,7 +149,9 @@ function draw(){
         */
         iti[0] = -stars.data[i][1]*vmagn*cosD + center2[0];
         iti[1] = -stars.data[i][2]*vmagn + center2[1];
-        count *= count/2;
+        if(debugBool){
+            count *= count/2;
+        }
         if(1 <= count){
             sradi = count/2;
             con.fillStyle = `#${Bri[0].toString(16).padStart(2,'0')}${Bri[1].toString(16).padStart(2,'0')}${Bri[2].toString(16).padStart(2,'0')}ff`;
@@ -151,6 +174,7 @@ function draw(){
 
 
         //debug
+
         /*
         if(stars.data[i][3] < 2){
             console.log("vegaかな",stars.data[i][3]);
@@ -161,6 +185,24 @@ function draw(){
         */
         ///debug
     }
+    //debug
+
+    /*
+    iti[0] = -300*vmagn*cosD + center2[0];
+    iti[1] = -22.8*vmagn + center2[1];
+    con.beginPath();
+    con.moveTo(iti[0], iti[1]);
+    iti[0] = -299.8*vmagn*cosD + center2[0];
+    con.lineTo(iti[0], iti[1]);
+    iti[1] = -22.65*vmagn + center2[1];
+    con.lineTo(iti[0], iti[1]);
+    iti[0] = -300*vmagn*cosD + center2[0];
+    con.lineTo(iti[0], iti[1]);
+    iti[1] = -22.8*vmagn + center2[1];
+    con.lineTo(iti[0], iti[1]);
+    con.stroke();
+    */
+
 }
 function resizeWindow(){
     width = window.innerWidth;
@@ -173,8 +215,11 @@ function resizeWindow(){
     cosD = Math.cos(center[1]*Math.PI/180);
     center2 = [width/2 + center[0]*vmagn*cosD, height/2 + center[1]*vmagn];
     draw();
-    //cimg.style.width = Math.min(width,height);    
-    //cimg.style.height = Math.min(width,height);    
+    cimg.style.left    = -cimgD[0][0]*vmagn*cosD + center2[0];
+    cimg.style.top   = -cimgD[0][1]*vmagn + center2[1];
+    cimg.style.width  = cimgD[0][2]*vmagn*cosD;
+    cimg.style.height = cimgD[0][3]*vmagn;
+    console.log(cimg.style.top,cimg.style.left,cimg.style.width,cimg.style.height);
 }
 window.onresize = resizeWindow;
 

@@ -8,6 +8,18 @@
                 background-color: black;
                 overflow: hidden;
             }
+            #infoDiv{
+                background-color: black;
+                overflow: scroll;
+                display: block;
+                border: 1px solid #fff;
+                position: absolute;
+                top: 50px;
+                left: 10px;
+                bottom: 0px;
+                right: 0px;
+                z-index: 5;
+            }
             #canvas{
                 position: absolute;
                 top: 0px;
@@ -15,6 +27,15 @@
                 bottom: 0px;
                 right: 0px;
                 z-index: 0;
+            }
+            #cImg{
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                bottom: 0px;
+                right: 0px;
+                opacity: 0.05;
+                z-index: 1;
             }
             #body{
                 position: absolute;
@@ -30,25 +51,38 @@
             .slider{
                 display: flex;
             }
+            .sliderMB{
+                width:400px;
+            }
         </style>
     </head>
     <body>
 
-        <!-- <img src="./m81_m82_T.png" id ="cImg"/> -->
         <canvas id="canvas" width="1px" height="1px"></canvas>
         <section id="body">
-            <input type="button" id="debug" value="change" />
+
+            <img src="./imgs/m27.png" id ="cImg"/>
+            <input type="button" id="debug" value="(for debug)" />
+            <input type="button" id="info" value="infomation/credit" />
             <select id="DSOlist">
-                <option value="m81">m81</option>
                 <option value="m27">m27</option>
+                <option value="m81">m81</option>
                 <option value="m57">m57</option>
             </select>
             <br>
             <div class="slider">
-                <p>ゆらぎ強さ</p><input type="range" id="yuragiS" value="0.1" min="0" max="1" step="0.05"/><p id="yuragiP">0.1</p>
+                <p>ゆらぎ強さ</p><input type="range" id="yuragiS" value="0.1" min="0" max="1" step="0.05" class="sliderMB"/><p id="yuragiP">0.1</p>
             </div>
             <div class="slider">
-                <p>星の最小半径での最大明さ(等級)</p><input type="range" id="minRadimaxMagS" value="5" min="0" max="15" step="0.5"/><p id="minRadimaxMagP">5</p>
+                <p>星の最小半径での最大明さ(等級)</p><input type="range" id="minRadimaxMagS" value="5" min="0" max="15" step="0.5"class="sliderMB"/><p id="minRadimaxMagP">5</p>
+            </div>
+            <div class="slider">
+                <p>画像明るさ</p><input type="range" id="cimgBriS" value="5" min="0" max="100" step="0.1"class="sliderMB"/><p id="cimgBriP">5</p>
+            </div>
+            <div id="infoDiv">
+                <p>data credit:</p>
+                <p>stars : Gaia DR3</p>
+                <p>nebula images : Middlebury College Jonathan Kemp <a href="https://middlebury.figshare.com/articles/dataset/Dumbbell_Nebula/21637502">URL</a> LICENCE:CC_BY_4.0</p>
             </div>
         </section>
         <script src="./main.js">

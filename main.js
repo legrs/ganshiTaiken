@@ -62,6 +62,10 @@ cimgBriS.addEventListener("change",()=>{
 });
 minRadimaxMagS.addEventListener("change",()=>{
     minRadimaxMagP.innerHTML = minRadimaxMagS.value.toString();
+    cimg.style.opacity = minRadimaxMagS.value / 3500;
+    cimgBriS.value = cimg.style.opacity * 100;
+    cimgBriP.innerHTML = (cimgBriS.value).toString();
+    console.log(`set opacity at ${cimgBriS.value}`);
 });
 dl.addEventListener("change",()=>{
     request.open("GET", `./stars/${dl.value}.json`, false);
@@ -196,7 +200,6 @@ function draw(){
     con.lineTo(iti[0], iti[1]);
     con.stroke();
     */
-
 }
 function resizeWindow(){
     width = window.innerWidth;
@@ -209,8 +212,9 @@ function resizeWindow(){
     cosD = Math.cos(center[1]*Math.PI/180);
     center2 = [width/2 + center[0]*vmagn*cosD, height/2 + center[1]*vmagn];
     draw();
-    cimg.style.left   = -cimgD[0][0]*vmagn*cosD + center2[0];
-    cimg.style.top   = -cimgD[0][1]*vmagn + center2[1];
+    cimg.style.left   = -cimgD[0][0]*vmagn*cosD + center2[0] + 5;
+    //3682
+    cimg.style.top    = -cimgD[0][1]*vmagn + center2[1];
     cimg.style.width  = cimgD[0][2]*vmagn*cosD;
     cimg.style.height = cimgD[0][3]*vmagn;
     console.log(cimg.style.top,cimg.style.left,cimg.style.width,cimg.style.height);

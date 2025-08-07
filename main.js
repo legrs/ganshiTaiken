@@ -20,7 +20,7 @@ let cosD;
 let debugBool = false;
     // 
 let request = new XMLHttpRequest();
-request.open("GET", "./stars/m27.json", false);
+request.open("GET", "./stars/m27_2.json", false);
 request.send();
 let stars = JSON.parse(request.responseText);
 let center = [stars.data[0][1],stars.data[0][2]];
@@ -83,7 +83,7 @@ document.getElementById("body").addEventListener("click",(event)=>{
     // consts
 const con = canv.getContext("2d");
 const dimm = 100000;
-const base = 16; //mag (base)mag |-> 0Bri
+//const base = 16; //mag (base)mag |-> 0Bri
 const cname = ["m27","m81","m57"];
 const cimgD = [ //画像の位置を大きさを正しくするための値 画像の左上の位置(ra,dec)，画像の幅,高さ(°)
     [300,22.8,0.2,0.15],
@@ -109,7 +109,7 @@ function draw(){
                 Bri[j] = 0;
                 nullKazu++;
             }else{
-                Bri[j] = base - stars.data[i][5-j] 
+                Bri[j] = stars.data[i][5-j]/1000000000; 
                 Bri[j] += yuragiS.value*Bri[j]*(Math.random()-0.5);
             }
         }
@@ -119,15 +119,11 @@ function draw(){
         Bri[1] = Math.floor(Bri[1]*255/maxBri);
         Bri[2] = Math.floor(Bri[2]*255/maxBri);
         count = count / (3-nullKazu);
-        count = count / (base - minRadimaxMagS.value);
+        count = count * minRadimaxMagS.value;
         con.beginPath();
-        /*
-        if(stars.data[i][0] == 1070540497113726080){
-            count = 20;
-            Bri[0] = 200;
-            Bri[1] = 20;
-            Bri[2] = 20;
+        if(stars.data[i][0] == 1833253124707245600){
         }
+        /*
         if(stars.data[i][0] == 1071309090100262912){
             count = 20;
             Bri[0] = 20;
@@ -149,17 +145,14 @@ function draw(){
         */
         iti[0] = -stars.data[i][1]*vmagn*cosD + center2[0];
         iti[1] = -stars.data[i][2]*vmagn + center2[1];
-        if(debugBool){
-            count *= count/2;
-        }
         if(1 <= count){
-            sradi = count/2;
+            sradi = Math.sqrt(count)/2;
             con.fillStyle = `#${Bri[0].toString(16).padStart(2,'0')}${Bri[1].toString(16).padStart(2,'0')}${Bri[2].toString(16).padStart(2,'0')}ff`;
             con.arc(iti[0], iti[1] , sradi , 0 , Math.PI*2 , true);
             con.fill();
             if(1.4 < count){
                 con.beginPath();
-                sradi = count/3;
+                sradi /= 2;
                 con.fillStyle = "#ffffff";
                 con.arc(iti[0], iti[1] , sradi , 0 , Math.PI*2 , true);
                 con.fill();
@@ -175,12 +168,13 @@ function draw(){
 
         //debug
 
+        if(Math.abs(iti[0]-mouse[0]) < 3 && Math.abs(iti[1]-mouse[1]) < 3){
+            console.log(i,stars.data[i]);
+            console.log((stars.data[i][5-0]+stars.data[i][5-1]+stars.data[i][5-2])/3);
+        }
         /*
         if(stars.data[i][3] < 2){
             console.log("vegaかな",stars.data[i][3]);
-        }
-        if(Math.abs(iti[0]-mouse[0]) < 3 && Math.abs(iti[1]-mouse[1]) < 3){
-            console.log(i,stars.data[i]);
         }
         */
         ///debug
@@ -215,7 +209,7 @@ function resizeWindow(){
     cosD = Math.cos(center[1]*Math.PI/180);
     center2 = [width/2 + center[0]*vmagn*cosD, height/2 + center[1]*vmagn];
     draw();
-    cimg.style.left    = -cimgD[0][0]*vmagn*cosD + center2[0];
+    cimg.style.left   = -cimgD[0][0]*vmagn*cosD + center2[0];
     cimg.style.top   = -cimgD[0][1]*vmagn + center2[1];
     cimg.style.width  = cimgD[0][2]*vmagn*cosD;
     cimg.style.height = cimgD[0][3]*vmagn;
@@ -228,5 +222,5 @@ window.onresize = resizeWindow;
 
 resizeWindow();
 console.log(stars.data[0][0]);
-let yuragi = setInterval(draw, 10);
+let yuragi = setInterval(draw, 70);
 //setTimeout(()=>{clearInterval(yuragi)},10000);

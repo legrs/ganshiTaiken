@@ -14,13 +14,14 @@ let Bri = [0,0,0];
 let iti = [0,0];
 let nullKazu = 0;
 let cuv = 0.1;
-let maxBri;
-let mouse = [0,0];
-let cosD;
+let maxBri; //
+let mouse = [0,0]; //mouse pos
+let cosD; //cos(dec)の値
 let debugBool = false;
+let celi = 0; //天体のindex
     // 
 let request = new XMLHttpRequest();
-request.open("GET", "./stars/m27_2.json", false);
+request.open("GET", "./stars/m27.json", false);
 request.send();
 let stars = JSON.parse(request.responseText);
 let center = [stars.data[0][1],stars.data[0][2]];
@@ -37,7 +38,10 @@ let cimgBriS = document.getElementById("cimgBriS");
 let cimgBriP = document.getElementById("cimgBriP");
 let minRadimaxMagS = document.getElementById("minRadimaxMagS");
 let minRadimaxMagP = document.getElementById("minRadimaxMagP");
+let backBriS = document.getElementById("backBriS");
+let backBriP = document.getElementById("backBriP");
 let dl = document.getElementById("DSOlist");
+let lp = document.getElementById("lp"); //light pollution
 let infoD = document.getElementById("infoDiv");
 let infoB = document.getElementById("info");
 
@@ -67,6 +71,9 @@ minRadimaxMagS.addEventListener("change",()=>{
     cimgBriP.innerHTML = (cimgBriS.value).toString();
     console.log(`set opacity at ${cimgBriS.value}`);
 });
+backBriS.addEventListener("change",()=>{
+    backBriP.innerHTML = backBriS.value.toString();
+});
 dl.addEventListener("change",()=>{
     request.open("GET", `./stars/${dl.value}.json`, false);
     request.send();
@@ -74,13 +81,15 @@ dl.addEventListener("change",()=>{
     center = [stars.data[0][1],stars.data[0][2]];
     console.log(center[0],center[1]);
     resizeWindow();
+    cimg.src = `./imgs/${dl.value}.png`;
+    celi = cname.indexOf(dl.value);
 });
 document.getElementById("body").addEventListener("click",(event)=>{
     console.log(event.clientX, event.clientY);
     mouse[0] = event.clientX;
     mouse[1] = event.clientY;
     console.log(" ");
-    console.log(center[0] + (mouse[0] - height/2)/(vmagn*cosD) , center[1] + (mouse[1] - height/2)/(vmagn) );
+    console.log(center[0] + (mouse[0] - height-Math.min(width,height)/2)/(vmagn*cosD) , center[1] + (mouse[1] - height-Math.min(width,height)/2)/(vmagn) );
     resizeWindow();
     console.log(" ");
 });
@@ -88,11 +97,11 @@ document.getElementById("body").addEventListener("click",(event)=>{
 const con = canv.getContext("2d");
 const dimm = 100000;
 //const base = 16; //mag (base)mag |-> 0Bri
-const cname = ["m27","m81","m57"];
+const cname = ["m27","m81","m104"];
 const cimgD = [ //画像の位置を大きさを正しくするための値 画像の左上の位置(ra,dec)，画像の幅,高さ(°)
     [300,22.8,0.2,0.15],
     [300,22.8,0.2,0.15],
-    [300,22.8,0.2,0.15]
+    [190.097625,-11.563,0.2,0.12]
     ];
 
 
@@ -101,11 +110,13 @@ function drawStar(x, y, r, b){
 }
 function draw(){
     con.clearRect(0,0,canv.width,canv.height);
-    con.strokeStyle = "red";
+    con.fillStyle = `#ffffff${Math.floor(backBriS.value*255/minRadimaxMagS.value).toString(16).padStart(2,'0')}`;
+    console.log(Math.floor(backBriS.value*255/minRadimaxMagS.value).toString(16).padStart(2,'0'));
+    //con.strokeStyle = "red";
     con.beginPath();
-    con.arc(width/2, height/2, radi, 0, Math.PI*2, true);
+    con.arc(width/2, height-Math.min(width,height)/2, radi, 0, Math.PI*2, true);
     con.stroke();
-
+    con.fill();
     for(let i=0; i<stars.data.length; i++){
         nullKazu = 0;
         for(let j=0; j<3; j++){
@@ -125,9 +136,9 @@ function draw(){
         count = count / (3-nullKazu);
         count = count * minRadimaxMagS.value;
         con.beginPath();
+        /*
         if(stars.data[i][0] == 1833253124707245600){
         }
-        /*
         if(stars.data[i][0] == 1071309090100262912){
             count = 20;
             Bri[0] = 20;
@@ -168,8 +179,6 @@ function draw(){
             con.arc(iti[0], iti[1] , sradi , 0 , Math.PI*2 , true);
             con.fill();
         }
-
-
         //debug
 
         if(Math.abs(iti[0]-mouse[0]) < 3 && Math.abs(iti[1]-mouse[1]) < 3){
@@ -183,22 +192,28 @@ function draw(){
         */
         ///debug
     }
+
+
     //debug
 
     /*
-    iti[0] = -300*vmagn*cosD + center2[0];
-    iti[1] = -22.8*vmagn + center2[1];
+    const centerA = [189.997625,-11.623];
+    const de = [0.1,0.06];
+
+    iti[0] = -(centerA[0]-de[0])*vmagn*cosD + center2[0];
+    iti[1] = -(centerA[1]-de[1])*vmagn + center2[1];
     con.beginPath();
     con.moveTo(iti[0], iti[1]);
-    iti[0] = -299.8*vmagn*cosD + center2[0];
+    iti[0] = -(centerA[0]+de[0])*vmagn*cosD + center2[0];
     con.lineTo(iti[0], iti[1]);
-    iti[1] = -22.65*vmagn + center2[1];
+    iti[1] = -(centerA[1]+de[1])*vmagn + center2[1];
     con.lineTo(iti[0], iti[1]);
-    iti[0] = -300*vmagn*cosD + center2[0];
+    iti[0] = -(centerA[0]-de[0])*vmagn*cosD + center2[0];
     con.lineTo(iti[0], iti[1]);
-    iti[1] = -22.8*vmagn + center2[1];
+    iti[1] = -(centerA[1]-de[1])*vmagn + center2[1];
     con.lineTo(iti[0], iti[1]);
     con.stroke();
+    console.log(center2,centerA,center);
     */
 }
 function resizeWindow(){
@@ -210,13 +225,12 @@ function resizeWindow(){
     radi = (Math.min(canv.width,canv.height)/2);
     vmagn = radi*2/fov; //px/°
     cosD = Math.cos(center[1]*Math.PI/180);
-    center2 = [width/2 + center[0]*vmagn*cosD, height/2 + center[1]*vmagn];
+    center2 = [width/2 + center[0]*vmagn*cosD, height-Math.min(width,height)/2 + center[1]*vmagn];
     draw();
-    cimg.style.left   = -cimgD[0][0]*vmagn*cosD + center2[0] + 5;
-    //3682
-    cimg.style.top    = -cimgD[0][1]*vmagn + center2[1];
-    cimg.style.width  = cimgD[0][2]*vmagn*cosD;
-    cimg.style.height = cimgD[0][3]*vmagn;
+    cimg.style.left   = -cimgD[celi][0]*vmagn*cosD + center2[0];
+    cimg.style.top    = -cimgD[celi][1]*vmagn + center2[1];
+    cimg.style.width  =  cimgD[celi][2]*vmagn*cosD;
+    cimg.style.height =  cimgD[celi][3]*vmagn;
     console.log(cimg.style.top,cimg.style.left,cimg.style.width,cimg.style.height);
 }
 window.onresize = resizeWindow;

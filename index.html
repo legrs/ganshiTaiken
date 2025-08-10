@@ -48,11 +48,18 @@
             p{
                 color: #ffffffff;
             }
+            h2{
+                color: #ffffff;
+            }
             .slider{
                 display: flex;
             }
             .sliderMB{
                 width:90vw;
+            }
+            .wide{
+                margin: 10px 10px;
+                padding: 10px 10px;
             }
         </style>
     </head>
@@ -62,27 +69,69 @@
         <section id="body">
 
             <img src="./imgs/m27.png" id ="cImg"/>
-            <input type="button" id="debug" value="(for debug)" />
-            <input type="button" id="info" value="infomation/credit" />
-            <select id="DSOlist">
+            <input type="button" id="debug" value="(for debug)" class="wide"/>
+            <input type="button" id="info" value="infomation/credit" class="wide"/>
+            <select id="DSOlist"class="wide">
                 <option value="m27">m27</option>
                 <option value="m81">m81</option>
-                <option value="m57">m57</option>
+                <option value="m104">m104</option>
             </select>
             <br>
             <div class="slider">
                 <p>ゆらぎ強さ</p><input type="range" id="yuragiS" value="0.1" min="0" max="1" step="0.05" class="sliderMB"/><p id="yuragiP">0.1</p>
             </div>
             <div class="slider">
-                <p>星の最小半径での最大明さ(count/10^9)</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="40000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p>
+                <p>星の最小半径での最大明さ 10^9count</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="40000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p>
             </div>
             <div class="slider">
                 <p>画像明るさ</p><input type="range" id="cimgBriS" value="5" min="0" max="100" step="0.1"class="sliderMB"/><p id="cimgBriP">5</p>
             </div>
+            <div class="slider">
+                <p>背景明るさ 10^-9count/arcsec^2</p><input type="range" id="backBriS" value="5" min="0" max="1000" step="0.1"class="sliderMB"/><p id="backBriP">5</p>
+            </div>
             <div id="infoDiv">
-                <p>data credit:</p>
+                <p style="color: #ffcccc;">再度[infomation/credit]を押せば閉じられます。You can close this popup by clicking [infomation/credit] again.</p>
+
+                <h2>このページについてAbout this page:</h2>
+
+                <p>このページは，天体の眼視観望を疑似体験するために使用するページです。
+                <br>
+                スマートフォンなどに表示し，それを適当なレンズで覗きます。レンズ構成については現在考え中です。
+                <br>
+                ひとみ径，アイポイント，見掛け視野，収差などを考慮し，まるで本当に望遠鏡で見ているような覗き心地を目指しています。みなさんもぜひいろいろと試してみてください。
+                </p>
+
+                <p>This page is used to create a simulated experience of visual stargazing .
+                <br>
+                First, the user displays this page on a device such as a smartphone. Secondly, they watch the display through a suitable lens. Regarding the lens configuration, I am considering that.
+                <br>
+                Considering exit pupil diameter, eye point, apparent field of view, distortion, etc. , I'm aiming for the user to feel as if they are really watching a DSO through a telescope.
+                Please try out various options.
+                </p>
+
+                <h2>データ提供についてAbout contributing data to me</h2>
+
+                <p>使用する天体写真について，現在ちょうどよいものがなく困っています。(自分の固定撮影作品では品質が低すぎるため。スカイサーベイも，天体が白飛びしていたり可視光ではなかったり...)
+                <br>
+                そこで，もしよろしければ天体写真を提供していただきたいです。fits,tiff,pngなどの形式で，できればダーク・フラット・スタックなどの前処理のみ済ませた生データが好ましいです。
+                星は白飛びしていても問題なく，星雲や銀河の高輝度部分が白飛びしていないことを望んでいます。基本的にどんな天体でも構いません。提供していただければ優先的に実装するつもりです。
+                <br>
+                画像の提供も含め質問・要望・報告・助言などはtwitter@legrs4073 もしくは ktgwyi01@gmail.com までご連絡ください。
+                </p>
+
+                <p>Regarding the astrophotography used on this page, I'm having trouble finding suitable photos. This is because the quality of my fixed imaging astrophotography is poor. Also, almost all sky surveys are oversaturated or do not show the visual light spectrum.
+                <br>
+                Could you therefore contribute your photographs to me? The data type could be FITS, TIFF or PNG. I would prefer them to be pre-processed (dark frame subtraction, flat field correction and stacking).
+                I hope for no saturation in nebulae or galaxies, but star saturation is not a problem. Any DSO is fine. I would implement the DSOs in the order that you provide them.
+                <br>
+                If you are considering providing your photos to me, or if you have any questions, requests, reports or advice, please contact me via twitter (@legrs4073) or email (ktgwyi01@gmail.com).
+                </p>
+
+                <h2>データのクレジットData credit:</h2>
+
                 <p>stars : Gaia DR3</p>
-                <p>nebula images : Middlebury College Jonathan Kemp <a href="https://middlebury.figshare.com/articles/dataset/Dumbbell_Nebula/21637502">URL</a> LICENCE:CC_BY_4.0</p>
+                <p>m27 nebula images : Middlebury College , Jonathan Kemp <a href="https://middlebury.figshare.com/articles/dataset/Dumbbell_Nebula/21637502">URL</a> LICENCE:CC_BY_4.0</p>
+                <p>m104 nebula images : だいこもん (twitter @pochomskii)<a href="https://x.com/pochomskii">URL</a></p>
             </div>
         </section>
         <script src="./main.js">

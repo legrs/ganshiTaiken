@@ -25,6 +25,7 @@ request.open("GET", "./stars/m27.json", false);
 request.send();
 let stars = JSON.parse(request.responseText);
 let center = [stars.data[0][1],stars.data[0][2]];
+let yuragi;
 cosD = Math.cos(center[1]*Math.PI/180);
 console.log(center[0],center[1]);
 
@@ -52,10 +53,11 @@ debug.addEventListener("click",()=>{
     debugBool = !debugBool;
 });
 ss.addEventListener("click",()=>{
-    if(ss.value = "STOP"){
+    if(ss.value == "STOP"){
         clearInterval(yuragi);
         ss.value = "RUN";
     }else{
+        console.log("aiueiuai");
         yuragi = setInterval(draw, 70);
         ss.value = "STOP";
     }
@@ -273,5 +275,5 @@ window.onresize = resizeWindow;
 
 resizeWindow();
 console.log(stars.data[0][0]);
-let yuragi = setInterval(draw, 70);
+yuragi = setInterval(draw, 70);
 //setTimeout(()=>{clearInterval(yuragi)},10000);

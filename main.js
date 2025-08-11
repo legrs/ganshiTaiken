@@ -44,10 +44,21 @@ let dl = document.getElementById("DSOlist");
 let lp = document.getElementById("lp"); //light pollution
 let infoD = document.getElementById("infoDiv");
 let infoB = document.getElementById("info");
+let ss = document.getElementById("ss");
+let bbu = document.getElementById("backBriUnit");
 
     // elements setup
 debug.addEventListener("click",()=>{
     debugBool = !debugBool;
+});
+ss.addEventListener("click",()=>{
+    if(ss.value = "STOP"){
+        clearInterval(yuragi);
+        ss.value = "RUN";
+    }else{
+        yuragi = setInterval(draw, 70);
+        ss.value = "STOP";
+    }
 });
 yuragiS.addEventListener("change",()=>{
     yuragiP.innerHTML = yuragiS.value.toString();
@@ -66,12 +77,24 @@ cimgBriS.addEventListener("change",()=>{
 });
 minRadimaxMagS.addEventListener("change",()=>{
     minRadimaxMagP.innerHTML = minRadimaxMagS.value.toString();
-    cimg.style.opacity = minRadimaxMagS.value / 3500;
-    cimgBriS.value = cimg.style.opacity * 100;
-    cimgBriP.innerHTML = (cimgBriS.value).toString();
     console.log(`set opacity at ${cimgBriS.value}`);
 });
 backBriS.addEventListener("change",()=>{
+    backBriP.innerHTML = backBriS.value.toString();
+});
+bbu.addEventListener("change",()=>{
+    let tmpB = backBriS.value;
+    if(bbu.value == "count"){ //mag to count
+        // mag = K + -2.5log[10]count; -2.5log[10]count = mag-K;
+        // log[10]count = (mag-K)/-2.5; 10^((mag-K)/-2.5) = count;
+        backBriS.min = 20.7;
+        backBriS.max = 13089.9;
+        backBriS.value = Math.pow(10, (tmpB - 25.29234)/-2.5);
+    }else{
+        backBriS.min = 15;
+        backBriS.max = 22;
+        backBriS.value = 25.29234 + -2.5*Math.log10(tmpB);
+    }
     backBriP.innerHTML = backBriS.value.toString();
 });
 dl.addEventListener("change",()=>{
@@ -109,13 +132,23 @@ function drawStar(x, y, r, b){
     let airPat = con.createRadialGradient(x*vmagn,y*vmagn,0,x*vmagn,y*vmagn,)
 }
 function draw(){
+    cimg.style.opacity = 290 / minRadimaxMagS.value;
+    cimgBriS.value = cimg.style.opacity * 100;
+    cimgBriP.innerHTML = (cimgBriS.value).toString();
     con.clearRect(0,0,canv.width,canv.height);
-    con.fillStyle = `#ffffff${Math.floor(backBriS.value*255/minRadimaxMagS.value).toString(16).padStart(2,'0')}`;
+            // vmagn = px / degree
+            // 1/vmagn = degree / px
+            // arcsesc / px = 3600/vmagn
+            // arcsesc^2 / px^2 = 3600^2/vmagn^2
+    if(bbu.value == "mag"){ //mag to countする必要
+        con.fillStyle = `#ffffff${Math.floor(Math.pow(10, (backBriS.value - 25.29234)/-2.5)*255/minRadimaxMagS.value/Math.pow(3600/vmagn, 2)).toString(16).padStart(2,'0')}`;
+        console.log("mag to count su");
+    }else{
+        con.fillStyle = `#ffffff${Math.floor(backBriS.value*255/minRadimaxMagS.value/Math.pow(3600/vmagn, 2)).toString(16).padStart(2,'0')}`;
+    }
     console.log(Math.floor(backBriS.value*255/minRadimaxMagS.value).toString(16).padStart(2,'0'));
-    //con.strokeStyle = "red";
     con.beginPath();
     con.arc(width/2, height-Math.min(width,height)/2, radi, 0, Math.PI*2, true);
-    con.stroke();
     con.fill();
     for(let i=0; i<stars.data.length; i++){
         nullKazu = 0;
@@ -124,7 +157,7 @@ function draw(){
                 Bri[j] = 0;
                 nullKazu++;
             }else{
-                Bri[j] = stars.data[i][5-j]/1000000000; 
+                Bri[j] = stars.data[i][5-j]/1000; 
                 Bri[j] += yuragiS.value*Bri[j]*(Math.random()-0.5);
             }
         }
@@ -134,7 +167,7 @@ function draw(){
         Bri[1] = Math.floor(Bri[1]*255/maxBri);
         Bri[2] = Math.floor(Bri[2]*255/maxBri);
         count = count / (3-nullKazu);
-        count = count * minRadimaxMagS.value;
+        count = count / minRadimaxMagS.value;
         con.beginPath();
         /*
         if(stars.data[i][0] == 1833253124707245600){

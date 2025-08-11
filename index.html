@@ -55,7 +55,7 @@
                 display: flex;
             }
             .sliderMB{
-                width:90vw;
+                width:85vw;
             }
             .wide{
                 margin: 10px 10px;
@@ -76,18 +76,22 @@
                 <option value="m81">m81</option>
                 <option value="m104">m104</option>
             </select>
+            <input type="button" id="ss" value="STOP" class="wide"/>
             <br>
             <div class="slider">
                 <p>ゆらぎ強さ</p><input type="range" id="yuragiS" value="0.1" min="0" max="1" step="0.05" class="sliderMB"/><p id="yuragiP">0.1</p>
             </div>
             <div class="slider">
-                <p>星の最小半径での最大明さ 10^9count</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="40000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p>
+                <p>星の最小半径での最大明さ 10^-4count</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="40000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p>
             </div>
             <div class="slider">
                 <p>画像明るさ</p><input type="range" id="cimgBriS" value="5" min="0" max="100" step="0.1"class="sliderMB"/><p id="cimgBriP">5</p>
             </div>
             <div class="slider">
-                <p>背景明るさ 10^-9count/arcsec^2</p><input type="range" id="backBriS" value="5" min="0" max="1000" step="0.1"class="sliderMB"/><p id="backBriP">5</p>
+                <p style="display:inline;">背景明るさ </p><select id="backBriUnit"class="wide"style="display:inline;">
+                <option value="mag">mag</option>
+                <option value="count">count</option>
+                </select><p style="display:inline;">/arcsec^2</p><input type="range" id="backBriS" value="22" min="15" max="22" step="0.1"class="sliderMB"/><p id="backBriP">22</p>
             </div>
             <div id="infoDiv">
                 <p style="color: #ffcccc;">再度[infomation/credit]を押せば閉じられます。You can close this popup by clicking [infomation/credit] again.</p>
@@ -107,6 +111,16 @@
                 <br>
                 Considering exit pupil diameter, eye point, apparent field of view, distortion, etc. , I'm aiming for the user to feel as if they are really watching a DSO through a telescope.
                 Please try out various options.
+                </p>
+
+                <h2>注意Be careful about:</h2>
+
+                <p>
+                正確性よりも(私個人が思う)美しさや感動を重視しています。よって実際の見えかたとは異なる場合があります。
+                </p>
+
+                <p>
+                I put more priority on beauty and impression than correctness, so It can diffrent from reality.
                 </p>
 
                 <h2>データ提供についてAbout contributing data to me</h2>

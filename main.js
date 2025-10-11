@@ -1,4 +1,4 @@
-    // varialbes
+    // varialbes aa
 let height = 1000;
 let width = 1000;
 let turb; // 大気ゆらぎ mdeg

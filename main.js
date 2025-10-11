@@ -6,10 +6,10 @@ let back; // 背景の明るさ mag
 let diam = 150; // 口径 mm
 let magn; // 倍率 倍
 let vmagn = 0.1; //描画につかう倍率 px/deg
-let fov = 1.4; //°
+let fov = 1.4; //deg
 let fl = 130; //現実で使用するレンズの倍率
 let radi,count,bri,sradi;
-let center2 = [0,0];
+let center2 = [0,0]; //画面無視した中心[px,px]
 let Bri = [0,0,0];
 let iti = [0,0];
 let nullKazu = 0;
@@ -19,19 +19,20 @@ let mouse = [0,0]; //mouse pos
 let cosD; //cos(dec)の値
 let debugBool = false;
 let celi = 0; //天体のindex
-let dy = [0,0,0,0]; //delta by yuragi
+let iyGrid = [[],[]];
+let ryGrid = [];
+let yGridWidth = 0.4; //deg
+let canvRadi;
+let origin = [0,0]; //円の左上(canvasの原点?)に対応するra dec
+
+let stars; // stars array
+let index; // starsDataIndex(ra dec r_flux g_flux b_flux)
+let center; // center ra dec
+let yuragi; // yuragi interval Object
 
 let deb = 0; // for debug
     // 
 let request = new XMLHttpRequest();
-request.open("GET", "./stars/m27.json", false);
-request.send();
-let stars = JSON.parse(request.responseText);
-let index = [1,2,5,4,3]; //ra dec r_flux g_flux b_flux
-let center = [stars.data[0][index[0]],stars.data[0][index[1]]];
-let yuragi;
-cosD = Math.cos(center[1]*Math.PI/180);
-console.log(center[0],center[1]);
 
     // elements
 let canv = document.getElementById("canvas");
@@ -117,8 +118,8 @@ document.getElementById("body").addEventListener("click",(event)=>{
     mouse[0] = event.clientX;
     mouse[1] = event.clientY;
     console.log(" ");
-    console.log(center[0] + (mouse[0] - height-Math.min(width,height)/2)/(vmagn*cosD) , center[1] + (mouse[1] - height-Math.min(width,height)/2)/(vmagn) );
-    resizeWindow();
+    //console.log(center[0] + (mouse[0] - height-Math.min(width,height)/2)/(vmagn*cosD) , center[1] + (mouse[1] - height-Math.min(width,height)/2)/(vmagn) );
+    //resizeWindow();
     console.log(" ");
 });
     // consts
@@ -137,15 +138,32 @@ function drawStar(x, y, r, b){
     let airPat = con.createRadialGradient(x*vmagn,y*vmagn,0,x*vmagn,y*vmagn,)
 }
 function draw(){
-    dy[0] += 2 * Math.random() - 1 - dy[0]/10; 
-    //dy[1] += 2 * Math.random() - 1 - dy[1]/10; 
-    //dy[2] += 2 * Math.random() - 1 - dy[2]/10; 
-    //dy[3] += 2 * Math.random() - 1 - dy[3]/10; 
     //ゆらがせるための
     //dy/5 : 絶対値の平均0.75付近
     //dy/10 : 1                
+    for(let k=0; k<2; k++){
+        for(let i=0; i<iyGrid[0].length; i++){
+            let tmp = [];
+            for(let j=0; j<iyGrid[0].length; j++){
+                iyGrid[k][i][j] += 2 * Math.random() - 1 - iyGrid[k][i][j]/10;
+            }
+        }
+    }
+    for(let i=0; i<ryGrid.length; i++){
+        let tmp = [];
+        for(let j=0; j<ryGrid.length; j++){
+            ryGrid[i][j] += 2 * Math.random() - 1 - ryGrid[i][j]/10;
+        }
+    }
 
-    //
+
+
+
+
+
+
+
+
     cimg.style.opacity = 290 / minRadimaxMagS.value;
     cimgBriS.value = cimg.style.opacity * 100;
     cimgBriP.innerHTML = (cimgBriS.value).toString();
@@ -177,7 +195,7 @@ function draw(){
 
 
                     //建設中 総光量の変化の考えかたがよくわからんので適当
-                //Bri[j] += yuragiS.value*Bri[j]*(Math.random()-0.5)/50;
+                Bri[j] += yuragiS.value*Bri[j]*(Math.random()-0.5)/50;
 
 
 
@@ -223,19 +241,46 @@ function draw(){
 
             // ゆらがせる
         // px/deg * deg*3600 / 3600 * [0:1] * diam / 2  yuragiS.valueは半径"なので*3600/2
-        let rand = Math.random();
-        if( rand * diam < 1 ){
-            sradi = vmagn * yuragiS.value * diam * rand / 1800; 
+        let oindex = [(stars.data[i][index[0]] - origin[0])/yGridWidth , (stars.data[i][index[1]] - origin[1])/yGridWidth];
+
+        // 小数部分oindex[0]%1
+        // 距離は計算コスト高杉
+
+
+        ///////////////////   deb
+
+
+        //let rand = Math.random();
+        let rand = [0,0];
+        rand[0] = 0;
+        if(0 < oindex[0] && oindex[0] < ryGrid.length &&0 < oindex[1] && oindex[1] < ryGrid.length){
+            rand[0] += ryGrid[Math.floor(oindex[0])][Math.floor(oindex[1])] * (1 - (    oindex[0]%1 + oindex[1]%1));
+            rand[0] += ryGrid[ Math.ceil(oindex[0])][Math.floor(oindex[1])] * (1 - (1 - oindex[0]%1 + oindex[1]%1));
+            rand[0] += ryGrid[Math.floor(oindex[0])][ Math.ceil(oindex[1])] * (1 - (1 + oindex[0]%1 - oindex[1]%1));
+            rand[0] += ryGrid[ Math.ceil(oindex[0])][ Math.ceil(oindex[1])] * (1 - (2 - oindex[0]%1 - oindex[1]%1));
+            rand[0] += 0.5 * Math.random();
+        }
+        if( rand[0] * diam < 1 ){
+            sradi = vmagn * yuragiS.value * diam * rand[0] / 1800; 
         }else{
-            sradi = vmagn * yuragiS.value * rand / 1800; 
+            sradi = vmagn * yuragiS.value * rand[0] / 1800; 
 
         }
-        sradi = vmagn * yuragiS.value * rand / 1800; 
         // px/deg * deg/3600 * 3600 * [-1:1] / 2  yuragiS.valueは半径"なので*3600/2
         //iti[0] += vmagn * yuragiS.value * 1800 * dy[2];
         //iti[1] += vmagn * yuragiS.value * 1800 * dy[3];
-        iti[0] += vmagn * yuragiS.value * (2*Math.random() - 1) / 1800 ;
-        iti[1] += vmagn * yuragiS.value * (2*Math.random() - 1) / 1800 ;
+        rand = [0,0];
+        for(let k=0; k<2; k++){
+            if(0 < oindex[0] && oindex[0] < iyGrid[k].length &&0 < oindex[1] && oindex[1] < iyGrid[k].length){
+                rand[k] += iyGrid[k][Math.floor(oindex[0])][Math.floor(oindex[1])] * (1 - (    oindex[0]%1 + oindex[1]%1));
+                rand[k] += iyGrid[k][ Math.ceil(oindex[0])][Math.floor(oindex[1])] * (1 - (1 - oindex[0]%1 + oindex[1]%1));
+                rand[k] += iyGrid[k][Math.floor(oindex[0])][ Math.ceil(oindex[1])] * (1 - (1 + oindex[0]%1 - oindex[1]%1));
+                rand[k] += iyGrid[k][ Math.ceil(oindex[0])][ Math.ceil(oindex[1])] * (1 - (2 - oindex[0]%1 - oindex[1]%1));
+                rand[k] += 0.5 * Math.random();
+            }
+        }
+        iti[0] += vmagn * yuragiS.value * rand[0] / 1800 ;
+        iti[1] += vmagn * yuragiS.value * rand[1] / 1800 ;
         //iti[0] += vmagn * yuragiS.value * rand / 1800;
         //sradi = vmagn * yuragiS.value * 0.8 * (Math.random()+0.5) / 3600; //ゆらぎ yuragiS.valueは平均半径(秒角)
 
@@ -267,8 +312,14 @@ function draw(){
         //debug
 
         if(Math.abs(iti[0]-mouse[0]) < 4 && Math.abs(iti[1]-mouse[1]) < 4){
-            console.log(i,stars.data[i]);
-            console.log((stars.data[i][index[2]]+stars.data[i][index[3]]+stars.data[i][index[4]])/3);
+            
+
+            ////////////////// console.log はここでやれ
+
+            
+            console.log(oindex);
+            //console.log(i,stars.data[i]);
+            //console.log((stars.data[i][index[2]]+stars.data[i][index[3]]+stars.data[i][index[4]])/3);
             //console.log((stars.data[i][index[2]+1]+stars.data[i][index[3]+1]+stars.data[i][index[4]+1])/3);
         }
         /*
@@ -303,32 +354,61 @@ function draw(){
     */
 }
 // change width height
-// vmagn cimg center cosD yGrid
+// vmagn cimg center cosD yGrid origin
 function resizeWindow(){
     width = window.innerWidth;
     height = window.innerHeight;
     canv.width = width;
     canv.height = height;
+    canvRadi = Math.min(canv.width,canv.height);
 
-    radi = (Math.min(canv.width,canv.height)/2);
-    vmagn = radi*2/fov; //px/°
+    radi = (canvRadi/2);
+    vmagn = radi*2/fov; //px/deg
     cosD = Math.cos(center[1]*Math.PI/180);
     center2 = [width/2 + center[0]*vmagn*cosD, height-Math.min(width,height)/2 + center[1]*vmagn];
-    draw();
     cimg.style.left   = -cimgD[celi][0]*vmagn*cosD + center2[0];
     cimg.style.top    = -cimgD[celi][1]*vmagn + center2[1];
     cimg.style.width  =  cimgD[celi][2]*vmagn*cosD;
     cimg.style.height =  cimgD[celi][3]*vmagn;
     console.log(cimg.style.top,cimg.style.left,cimg.style.width,cimg.style.height);
 
+    let len = (canvRadi/vmagn)/yGridWidth + 1;
+    for(let k=0; k<2; k++){
+        for(let i=0; i<len; i++){
+            let tmp = [];
+            for(let j=0; j<len; j++){
+                tmp.push(0);
+            }
+            iyGrid[k].push(tmp);
+        }
+    }
+    for(let i=0; i<len; i++){
+        let tmp = [];
+        for(let j=0; j<len; j++){
+            tmp.push(0);
+        }
+        ryGrid.push(tmp);
+    }
+    console.log(iyGrid);
+
+    origin[0] = center[0] - fov/2;
+    origin[1] = center[1] - fov/2;
+
 }
 window.onresize = resizeWindow;
 
 
 function main(){
+    request.open("GET", "./stars/m27.json", false);
+    request.send();
+    stars = JSON.parse(request.responseText);
+    index = [1,2,5,4,3]; //ra dec r_flux g_flux b_flux
+    center = [stars.data[0][index[0]],stars.data[0][index[1]]];
+    console.log(center[0],center[1]);
+
     resizeWindow();
     console.log(stars.data[0][0]);
-    yuragi = setInterval(draw, 50); //70ms 
+    yuragi = setInterval(draw, 80); //70ms 
 }
 
 //ここから、ここから

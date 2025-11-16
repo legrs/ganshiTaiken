@@ -72,6 +72,7 @@
             <input type="button" id="debug" value="(for debug)" class="wide"/>
             <input type="button" id="info" value="infomation/credit" class="wide"/>
             <select id="DSOlist"class="wide">
+                <option value="m15">m15</option>
                 <option value="m27">m27</option>
                 <option value="m81">m81</option>
                 <option value="m104">m104</option>
@@ -82,7 +83,8 @@
                 <p>ゆらぎ "</p><input type="range" id="yuragiS" value="10" min="0" max="10" step="0.01" class="sliderMB"/><p id="yuragiP">3</p>
             </div>
             <div class="slider">
-                <p>星の最小半径での最大明さ 10^-4count</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="40000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p>
+                <!-- <p>星の最小半径での最大明さ 10^-4count</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="40000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p> -->
+                <p>明るさ調整定数</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="4000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p>
             </div>
             <div class="slider">
                 <p>画像明るさ</p><input type="range" id="cimgBriS" value="5" min="0" max="100" step="0.1"class="sliderMB"/><p id="cimgBriP">5</p>
@@ -90,8 +92,11 @@
             <div class="slider">
                 <p style="display:inline;">背景明るさ </p><select id="backBriUnit"class="wide"style="display:inline;">
                 <option value="mag">mag</option>
-                <option value="count">count</option>
+                <option value="count">flux</option>
                 </select><p style="display:inline;">/arcsec^2</p><input type="range" id="backBriS" value="22" min="15" max="22" step="0.1"class="sliderMB"/><p id="backBriP">22</p>
+            </div>
+            <div class="slider">
+                <p>実視野 °</p><input type="range" id="fovS" value="1" min="0.1" max="2" step="0.1"class="sliderMB"/><p id="fovP">1</p>
             </div>
             <div id="infoDiv">
                 <p style="color: #ffcccc;">再度[infomation/credit]を押せば閉じられます。You can close this popup by clicking [infomation/credit] again.</p>
@@ -133,7 +138,7 @@
                 画像の提供も含め質問・要望・報告・助言などはtwitter@legrs4073 もしくは ktgwyi01@gmail.com までご連絡ください。
                 </p>
 
-                <p>Regarding the astrophotography used on this page, I'm having trouble finding suitable photos. This is because the quality of my fixed imaging astrophotography is poor. Also, almost all sky surveys are oversaturated or do not show the visual light spectrum.
+                <p>Regarding the astrophotography used on this page, I'm having trouble finding suitable photos. This is because the quality of my fixed imaging astrophotography is too poor to use. Also, almost all sky surveys are oversaturated , do not show the optical spectrum , or etc..
                 <br>
                 Could you therefore contribute your photographs to me? The data type could be FITS, TIFF or PNG. I would prefer them to be pre-processed (dark frame subtraction, flat field correction and stacking).
                 I hope for no saturation in nebulae or galaxies, but star saturation is not a problem. Any DSO is fine. I would implement the DSOs in the order that you provide them.

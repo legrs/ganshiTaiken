@@ -1,7 +1,6 @@
     // varialbes aa
 let height = 1000;
 let width = 1000;
-let diam = 150; // 口径 mm
 let vmagn = 0.1; //描画につかう倍率 px/deg
 let fov = 0.8; //deg
 let fl = 130; //現実で使用するレンズの倍率
@@ -45,6 +44,14 @@ let backBriS = document.getElementById("backBriS");
 let backBriP = document.getElementById("backBriP");
 let fovS = document.getElementById("fovS");
 let fovP = document.getElementById("fovP");
+let afovS = document.getElementById("afovS");
+let afovP = document.getElementById("afovP");
+let diamS = document.getElementById("diamS");
+let diamP = document.getElementById("diamP");
+let flS = document.getElementById("flS");
+let flP = document.getElementById("flP");
+let fleS = document.getElementById("fleS");
+let fleP = document.getElementById("fleP");
 let dl = document.getElementById("DSOlist");
 let lp = document.getElementById("lp"); //light pollution
 let infoD = document.getElementById("infoDiv");
@@ -87,9 +94,19 @@ minRadimaxMagS.addEventListener("change",()=>{
 backBriS.addEventListener("change",()=>{
     backBriP.innerHTML = backBriS.value.toString();
 });
-fovS.addEventListener("change",()=>{
-    fovP.innerHTML = fovS.value.toString();
-    fov = fovS.value;
+diamS.addEventListener("change",()=>{
+    diamP.innerHTML = diamS.value.toString();
+});
+flS.addEventListener("change",()=>{
+    flP.innerHTML = flS.value.toString();
+    resizeWindow();
+});
+fleS.addEventListener("change",()=>{
+    fleP.innerHTML = fleS.value.toString();
+    resizeWindow();
+});
+afovS.addEventListener("change",()=>{
+    afovP.innerHTML = afovS.value.toString();
     resizeWindow();
 });
 bbu.addEventListener("change",()=>{
@@ -146,7 +163,6 @@ function draw(){
     //ゆらがせるための
     //dy/5 : 絶対値の平均0.75付近
     //dy/10 : 1                
-    console.log(ryGrid);
     for(let k=0; k<2; k++){
         for(let i=0; i<iyGrid[0].length; i++){
             for(let j=0; j<iyGrid[0].length; j++){
@@ -157,7 +173,6 @@ function draw(){
     for(let i=0; i<ryGrid.length; i++){
         for(let j=0; j<ryGrid.length; j++){
             ryGrid[i][j] += 2 * Math.random() - 1 - ryGrid[i][j]/10;
-            console.log(ryGrid[i][j]);
         }
     }
 
@@ -239,7 +254,6 @@ function draw(){
         iti[1] = -stars.data[i][index[1]]*vmagn + center2[1];
 
             // yuragase
-        // px/deg * deg*3600 / 3600 * [0:1] * diam / 2  yuragiS.valueは半径"なので*3600/2
         let oindex = [(stars.data[i][index[0]] - origin[0])/yGridWidth , (stars.data[i][index[1]] - origin[1])/yGridWidth];
         //画面座標系での天体の位置を、ゆらぎ配列のインデックスに対応するような単位で表したもの
 
@@ -250,7 +264,6 @@ function draw(){
         ///////////////////   deb
 
 
-        //let rand = Math.random();
         let rand = [0,0];
         rand[0] = 0;
         if(0 < oindex[0] && oindex[0] < ryGrid.length-1 && 0 < oindex[1] && oindex[1] < ryGrid.length-1){
@@ -259,16 +272,14 @@ function draw(){
             rand[0] += ryGrid[Math.floor(oindex[0])][ Math.ceil(oindex[1])] * (1 - oindex[0]%1)*    oindex[1]%1  ;
             rand[0] += ryGrid[ Math.ceil(oindex[0])][ Math.ceil(oindex[1])] *   oindex[0]%1    *    oindex[1]%1  ;
             //どこで影響が0になってほしいか考える
-            rand[0] += 0.5 * Math.random(); //より細かいゆらぎ
+            rand[0] += 0.4 * Math.random(); //より細かいゆらぎ
         }
-        if( rand[0] * diam < 1 ){
-            sradi = vmagn * yuragiS.value * diam * rand[0] / 1800; 
-        }else{
-            sradi = vmagn * yuragiS.value * rand[0] / 1800; 
+        rand[0] *= diamS.value * 0.01;
+        if(0.5 < rand[0]){
+            rand[0] = 0.5;
         }
-        // px/deg * deg/3600 * 3600 * [-1:1] / 2  yuragiS.valueは半径"なので*3600/2
-        //iti[0] += vmagn * yuragiS.value * 1800 * dy[2];
-        //iti[1] += vmagn * yuragiS.value * 1800 * dy[3];
+        sradi = vmagn * Math.atan2(flS.value * 0.00061 , diamS.value * fleS.value); //wikipedia airy disk より さすがに重いかな…
+        sradi += Math.abs(vmagn * yuragiS.value * rand[0] / 1800); 
         rand = [0,0];
         for(let k=0; k<2; k++){
             if(0 < oindex[0] && oindex[0] < iyGrid[k].length-1 && 0 < oindex[1] && oindex[1] < iyGrid[k].length-1){
@@ -281,8 +292,7 @@ function draw(){
         }
         iti[0] += vmagn * yuragiS.value * rand[0] / 1800 ;
         iti[1] += vmagn * yuragiS.value * rand[1] / 1800 ;
-        //iti[0] += vmagn * yuragiS.value * rand / 1800;
-        //sradi = vmagn * yuragiS.value * 0.8 * (Math.random()+0.5) / 3600; //ゆらぎ yuragiS.valueは平均半径(秒角)
+
 
         //mim radius ( can disp )
         if(sradi < 0.56 ){
@@ -317,7 +327,6 @@ function draw(){
             ////////////////// console.log はここでやれ
 
             
-            console.log();
             //console.log(oindex);
             console.log(i,stars.data[i]);
             //console.log((stars.data[i][index[2]]+stars.data[i][index[3]]+stars.data[i][index[4]])/3);
@@ -362,6 +371,9 @@ function resizeWindow(){
     canv.width = width;
     canv.height = height;
     canvRadi = Math.min(canv.width,canv.height);
+
+    fov = afovS.value * fleS.value/flS.value;
+    console.log(fov);
 
     radi = (canvRadi/2);
     vmagn = radi*2/fov; //px/deg

@@ -87,7 +87,7 @@
                 <p>明るさ調整定数</p><input type="range" id="minRadimaxMagS" value="100" min="1" max="4000" step="1"class="sliderMB"/><p id="minRadimaxMagP">100</p>
             </div>
             <div class="slider">
-                <p>画像明るさ</p><input type="range" id="cimgBriS" value="5" min="0" max="100" step="0.1"class="sliderMB"/><p id="cimgBriP">5</p>
+                <p>見かけ視野 °</p><input type="range" id="afovS" value="52" min="30" max="100" step="0.1"class="sliderMB"/><p id="afovP">52</p>
             </div>
             <div class="slider">
                 <p style="display:inline;">背景明るさ </p><select id="backBriUnit"class="wide"style="display:inline;">
@@ -96,7 +96,24 @@
                 </select><p style="display:inline;">/arcsec^2</p><input type="range" id="backBriS" value="22" min="15" max="22" step="0.1"class="sliderMB"/><p id="backBriP">22</p>
             </div>
             <div class="slider">
+                <p>口径 mm</p><input type="range" id="diamS" value="5" min="50" max="1000" step="1"class="sliderMB"/><p id="diamP">60</p>
+            </div>
+            <div class="slider">
+                <p>対物鏡の焦点距離 mm</p><input type="range" id="flS" value="700" min="50" max="2000" step="1"class="sliderMB"/><p id="flP">700</p>
+            </div>
+            <div class="slider">
+                <p>接眼鏡の焦点距離 mm</p><input type="range" id="fleS" value="20" min="1" max="50" step="1"class="sliderMB"/><p id="fleP">20</p>
+            </div>
+
+            <br>表示専用
+            <br>
+            <!--
+            <div class="slider">
                 <p>実視野 °</p><input type="range" id="fovS" value="1" min="0.1" max="2" step="0.1"class="sliderMB"/><p id="fovP">1</p>
+            </div>
+            -->
+            <div class="slider" style="display: none;">
+                <p>画像明るさ</p><input type="range" id="cimgBriS" value="5" min="0" max="100" step="0.1"class="sliderMB"/><p id="cimgBriP">5</p>
             </div>
             <div id="infoDiv">
                 <p style="color: #ffcccc;">再度[infomation/credit]を押せば閉じられます。You can close this popup by clicking [infomation/credit] again.</p>

@@ -272,11 +272,12 @@ function draw(){
             rand[0] += ryGrid[Math.floor(oindex[0])][ Math.ceil(oindex[1])] * (1 - oindex[0]%1)*    oindex[1]%1  ;
             rand[0] += ryGrid[ Math.ceil(oindex[0])][ Math.ceil(oindex[1])] *   oindex[0]%1    *    oindex[1]%1  ;
             //どこで影響が0になってほしいか考える
-            rand[0] += 0.4 * Math.random(); //より細かいゆらぎ
+            rand[0] += 0.5 * Math.random(); //より細かいゆらぎ
         }
-        rand[0] *= diamS.value * 0.01;
-        if(0.5 < rand[0]){
-            rand[0] = 0.5;
+        rand[0] = Math.abs(rand[0]);
+        rand[0] *= diamS.value * 0.005;
+        if(2 < rand[0]){
+            rand[0] = 2;
         }
         sradi = vmagn * Math.atan2(flS.value * 0.00061 , diamS.value * fleS.value); //wikipedia airy disk より さすがに重いかな…
         sradi += Math.abs(vmagn * yuragiS.value * rand[0] / 1800); 

@@ -126,6 +126,7 @@ document.getElementById("body").addEventListener("click",(event)=>{
     //resizeWindow();
     console.log(" ");
 });
+
     // consts
 const con = canv.getContext("2d");
 const dimm = 100000;
@@ -145,18 +146,18 @@ function draw(){
     //ゆらがせるための
     //dy/5 : 絶対値の平均0.75付近
     //dy/10 : 1                
+    console.log(ryGrid);
     for(let k=0; k<2; k++){
         for(let i=0; i<iyGrid[0].length; i++){
-            let tmp = [];
             for(let j=0; j<iyGrid[0].length; j++){
                 iyGrid[k][i][j] += 2 * Math.random() - 1 - iyGrid[k][i][j]/10;
             }
         }
     }
     for(let i=0; i<ryGrid.length; i++){
-        let tmp = [];
         for(let j=0; j<ryGrid.length; j++){
             ryGrid[i][j] += 2 * Math.random() - 1 - ryGrid[i][j]/10;
+            console.log(ryGrid[i][j]);
         }
     }
 
@@ -264,7 +265,6 @@ function draw(){
             sradi = vmagn * yuragiS.value * diam * rand[0] / 1800; 
         }else{
             sradi = vmagn * yuragiS.value * rand[0] / 1800; 
-
         }
         // px/deg * deg/3600 * 3600 * [-1:1] / 2  yuragiS.valueは半径"なので*3600/2
         //iti[0] += vmagn * yuragiS.value * 1800 * dy[2];
@@ -377,9 +377,10 @@ function resizeWindow(){
     origin[1] = center[1] - fov/2;
 
     // depend on fov, yGridWidth
-    let iyGrid = [[],[]]; 
-    let ryGrid = []; 
+    iyGrid = [[],[]]; 
+    ryGrid = []; 
     let len = fov/yGridWidth + 1;
+    console.log(len);
     for(let k=0; k<2; k++){ //iti x,y
         for(let i=0; i<len; i++){ 
             let tmp = [];
@@ -396,7 +397,7 @@ function resizeWindow(){
         }
         ryGrid.push(tmp);
     }
-    console.log(iyGrid);
+    console.log(ryGrid);
 
 }
 window.onresize = resizeWindow;
@@ -413,8 +414,10 @@ function main(){
     //celi = cname.indexOf(dl.value);
 
     resizeWindow();
+
+    console.log(ryGrid);
     console.log(stars.data[0][0]);
-    yuragi = setInterval(draw, 80); //70ms 
+    yuragi = setInterval(draw, 70); //70ms 
 }
 
 //ここから、ここから
